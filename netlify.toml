@@ -1,0 +1,10 @@
+[build]
+  # Since this is a static site with no build step, publish the root directory
+  publish = "."
+
+# Redirect rules (if needed)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

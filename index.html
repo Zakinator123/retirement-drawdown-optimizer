@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Portfolio Drawdown Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Retirement Portfolio Drawdown Optimizer</h1>
+            <p>Optimize your Roth conversion strategy and visualize retirement scenarios</p>
+        </header>
+        
+        <div class="layout-wrapper">
+            <div class="top-section">
+                <div class="controls-panel">
+                    <!-- Account Balances -->
+                <div class="card">
+                    <div class="card-title">Initial Account Balances</div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Traditional IRA (Pre-tax)</span>
+                            <span class="slider-value" id="iraBalanceValue">$2,000,000</span>
+                        </div>
+                        <input type="range" id="iraBalance" min="0" max="5000000" step="50000" value="2000000">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Roth IRA</span>
+                            <span class="slider-value" id="rothBalanceValue">$0</span>
+                        </div>
+                        <input type="range" id="rothBalance" min="0" max="2000000" step="25000" value="0">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Taxable Brokerage (After-tax)</span>
+                            <span class="slider-value" id="taxableBalanceValue">$500,000</span>
+                        </div>
+                        <input type="range" id="taxableBalance" min="0" max="2000000" step="25000" value="500000">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Cash Equivalent</span>
+                            <span class="slider-value" id="cashBalanceValue">$200,000</span>
+                        </div>
+                        <input type="range" id="cashBalance" min="0" max="500000" step="10000" value="200000">
+                    </div>
+                </div>
+                
+                <!-- Parameters -->
+                <div class="card">
+                    <div class="card-title">Parameters</div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Income Tax Rate</span>
+                            <span class="slider-value" id="taxRateValue">25%</span>
+                        </div>
+                        <input type="range" id="taxRate" min="10" max="40" step="1" value="25">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Investment Return (Taxable/IRA/Roth)</span>
+                            <span class="slider-value" id="investmentReturnValue">8%</span>
+                        </div>
+                        <input type="range" id="investmentReturn" min="4" max="15" step="0.5" value="8">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Cash Return</span>
+                            <span class="slider-value" id="cashReturnValue">3%</span>
+                        </div>
+                        <input type="range" id="cashReturn" min="0" max="6" step="0.25" value="3">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Annual Spending</span>
+                            <span class="slider-value" id="spendingValue">$100,000</span>
+                        </div>
+                        <input type="range" id="spending" min="50000" max="200000" step="5000" value="100000">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Inflation Rate</span>
+                            <span class="slider-value" id="inflationValue">3%</span>
+                        </div>
+                        <input type="range" id="inflation" min="0" max="5" step="0.25" value="3">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Roth Conversion (per year)</span>
+                            <span class="slider-value" id="conversionValue">$50,000</span>
+                        </div>
+                        <input type="range" id="conversion" min="0" max="200000" step="5000" value="50000">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Capital Gains Tax Rate</span>
+                            <span class="slider-value" id="capGainsRateValue">15%</span>
+                        </div>
+                        <input type="range" id="capGainsRate" min="0" max="25" step="1" value="15">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Taxable Account Cost Basis %</span>
+                            <span class="slider-value" id="costBasisValue">50%</span>
+                        </div>
+                        <input type="range" id="costBasis" min="0" max="100" step="5" value="50">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Taxable Account Short-Term Gain % <span title="Portion of taxable gains treated as short-term and taxed at your income tax rate when selling">ⓘ</span></span>
+                            <span class="slider-value" id="taxableShortTermPctValue">0%</span>
+                        </div>
+                        <input type="range" id="taxableShortTermPct" min="0" max="100" step="5" value="0">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Taxable Account Dividend Income and Distributed Gains <span title="Annual tax dollars for dividends/cap-gain distributions in the taxable account; amount inflates each year by the inflation rate">ⓘ</span></span>
+                            <span class="slider-value" id="taxableNonSaleTaxValue">$0</span>
+                        </div>
+                        <input type="range" id="taxableNonSaleTax" min="0" max="50000" step="1000" value="0">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>IRA Tax Loss % (to convert to cash) <span title="Assumed percent lost to taxes when converting IRA to cash for the Equivalent Cash Value metric">ⓘ</span></span>
+                            <span class="slider-value" id="iraTaxLossPctValue">0%</span>
+                        </div>
+                        <input type="range" id="iraTaxLossPct" min="0" max="100" step="5" value="0">
+                    </div>
+                </div>
+                
+                <!-- Conversion & Simulation -->
+                <div class="card">
+                    <div class="card-title">Conversion & Simulation</div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Conversion Start Age</span>
+                            <span class="slider-value" id="convStartAgeValue">63</span>
+                        </div>
+                        <input type="range" id="convStartAge" min="62" max="75" step="1" value="63">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Conversion End Age</span>
+                            <span class="slider-value" id="convEndAgeValue">68</span>
+                        </div>
+                        <input type="range" id="convEndAge" min="63" max="80" step="1" value="68">
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Simulation End Age</span>
+                            <span class="slider-value" id="endAgeValue">85</span>
+                        </div>
+                        <input type="range" id="endAge" min="75" max="95" step="1" value="85">
+                    </div>
+                </div>
+                
+                <!-- Withdrawal Order Strategy -->
+                <div class="card">
+                    <div class="card-title">Withdrawal Order Strategy</div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span>Withdrawal Sequence</span>
+                        </div>
+                        <select id="withdrawalOrder" class="strategy-select">
+                            <option value="cash,taxable,ira,roth">Cash → Taxable → IRA → Roth (Tax-Efficient)</option>
+                            <option value="cash,ira,taxable,roth">Cash → IRA → Taxable → Roth</option>
+                            <option value="cash,taxable,roth,ira">Cash → Taxable → Roth → IRA</option>
+                            <option value="cash,ira,roth,taxable">Cash → IRA → Roth → Taxable</option>
+                            <option value="cash,roth,taxable,ira">Cash → Roth → Taxable → IRA</option>
+                            <option value="cash,roth,ira,taxable">Cash → Roth → IRA → Taxable</option>
+                            <option value="ira,cash,taxable,roth">IRA → Cash → Taxable → Roth</option>
+                            <option value="taxable,cash,ira,roth">Taxable → Cash → IRA → Roth</option>
+                        </select>
+                    </div>
+                    <button class="scenario-btn optimal" style="width: 100%; margin-top: 12px;" onclick="findOptimalWithdrawalOrderUI()">
+                        🔍 Find Optimal Withdrawal Order
+                        <span class="assumption-note" id="withdrawalAssumptions"></span>
+                    </button>
+                    <div id="optimalOrderResult" class="optimal-result" style="display: none;">
+                        <div class="icon">✓</div>
+                        <div class="details">
+                            <h3 id="optimalOrderName">Best Order</h3>
+                            <p>Final value: <span id="optimalOrderTotal">$0</span></p>
+                        </div>
+                    </div>
+                    <div id="orderComparisonTable" class="order-comparison" style="display: none;">
+                        <div class="comparison-title">All Strategies Ranked:</div>
+                        <div id="orderComparisonList" class="comparison-list"></div>
+                    </div>
+                </div>
+                
+                <!-- Quick Scenarios -->
+                <div class="card">
+                    <div class="card-title">Quick Scenarios</div>
+                    <div class="scenarios-grid">
+                        <button class="scenario-btn" id="scenario1" onclick="loadScenario(1)">
+                            Scenario 1<br><small>$50k conv, 25% tax</small>
+                        </button>
+                        <button class="scenario-btn" id="scenario2" onclick="loadScenario(2)">
+                            Scenario 2<br><small>$100k conv, 25% tax</small>
+                        </button>
+                        <button class="scenario-btn" id="scenario4" onclick="loadScenario(4)">
+                            Scenario 4<br><small>$50k conv, 20% tax</small>
+                        </button>
+                        <button class="scenario-btn" id="scenario5" onclick="loadScenario(5)">
+                            Scenario 5<br><small>$50k conv, 15% return</small>
+                        </button>
+                        <button class="scenario-btn optimal" id="scenario3" onclick="loadScenario(3)">
+                            ⚡ Find Optimal Roth Conversion Strategy
+                            <span class="assumption-note" id="conversionAssumptions"></span>
+                        </button>
+                    </div>
+                    <div id="optimalResult" class="optimal-result" style="display: none;">
+                        <div class="icon">✓</div>
+                        <div class="details">
+                            <h3>Optimal Conversion: <span id="optimalAmount">$0</span>/year</h3>
+                            <p>Maximizes portfolio value at age <span class="end-age-label">85</span>: <span id="optimalTotal">$0</span></p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+                <!-- Results Panel -->
+                <div class="results-panel">
+                <!-- Account Balances at End -->
+                <div class="summary-grid">
+                    <div class="summary-card ira">
+                        <div class="summary-label">IRA at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalIra">$0</div>
+                    </div>
+                    <div class="summary-card roth">
+                        <div class="summary-label">Roth at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalRoth">$0</div>
+                    </div>
+                    <div class="summary-card taxable">
+                        <div class="summary-label">Taxable at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalTaxable">$0</div>
+                    </div>
+                    <div class="summary-card cash">
+                        <div class="summary-label">Cash at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalCash">$0</div>
+                    </div>
+                </div>
+                
+                <!-- Total Value -->
+                <div class="summary-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="summary-card total highlight">
+                        <div class="summary-label">Total Portfolio Value at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalTotal">$0</div>
+                    </div>
+                    <div class="summary-card total">
+                        <div class="summary-label">Equivalent Cash Value at <span class="end-age-label">85</span></div>
+                        <div class="summary-value" id="finalEquiv">$0</div>
+                    </div>
+                </div>
+                
+                <!-- Tax Summary -->
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Income Tax</div>
+                        <div class="summary-value" id="totalIncomeTax">$0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Cap Gains Tax</div>
+                        <div class="summary-value" id="totalCapGainsTax">$0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Converted</div>
+                        <div class="summary-value" id="totalConverted">$0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total RMDs Taken</div>
+                        <div class="summary-value" id="totalRmds">$0</div>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-container full-width">
+                        <div class="chart-title">Account Values Over Time</div>
+                        <div class="chart-wrapper">
+                            <canvas id="valuesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">Annual Withdrawals by Account</div>
+                        <div class="chart-wrapper">
+                            <canvas id="withdrawalsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">Annual Taxes Paid</div>
+                        <div class="chart-wrapper">
+                            <canvas id="taxesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Full-width table section -->
+            <div class="table-section">
+                <!-- Data Table -->
+                <div class="card">
+                    <div class="card-title">Yearly Breakdown</div>
+                    <div class="table-legend">
+                        <span class="legend-item"><strong>Spending Sources (Net $):</strong> Money that actually goes toward your annual spending after all taxes are paid</span>
+                        <span class="legend-item"><strong>Taxes (Gross $):</strong> Tax amounts owed and gross amounts withdrawn from each account to pay them</span>
+                        <span class="legend-item"><strong>IRA Activity (Gross $):</strong> All IRA-related transactions including RMDs, withdrawals, conversions, and tax withholding</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <colgroup>
+                                <col class="age-column">
+                            </colgroup>
+                            <colgroup class="balance-group">
+                                <col span="4">
+                            </colgroup>
+                            <colgroup class="spending-group">
+                                <col span="5">
+                            </colgroup>
+                            <colgroup class="tax-group">
+                                <col span="5">
+                            </colgroup>
+                            <colgroup class="transfer-group">
+                                <col span="4">
+                            </colgroup>
+                            <thead>
+                                <tr class="group-header-row">
+                                    <th></th>
+                                    <th colspan="4" class="group-header">BALANCES</th>
+                                    <th colspan="5" class="group-header">SPENDING SOURCES</th>
+                                    <th colspan="5" class="group-header">TAXES</th>
+                                    <th colspan="4" class="group-header">IRA ACTIVITY</th>
+                                </tr>
+                                <tr>
+                                    <th>Age</th>
+                                    <th>IRA</th>
+                                    <th>Roth</th>
+                                    <th>Taxable</th>
+                                    <th>Cash</th>
+                                    <th>Need</th>
+                                    <th>Cash</th>
+                                    <th>Taxable</th>
+                                    <th title="Net from IRA after tax withheld (includes RMD net)">IRA</th>
+                                    <th>Roth</th>
+                                    <th>Income</th>
+                                    <th>Cap Gains</th>
+                                    <th>From Cash</th>
+                                    <th>From Taxable</th>
+                                    <th title="Total IRA taxes: withheld + used for other taxes">From IRA</th>
+                                    <th title="Total gross IRA withdrawals (all purposes)">Total Wdrw</th>
+                                    <th title="Required Minimum Distribution (green=voluntary extra, red=forced)">RMD</th>
+                                    <th title="RMD surplus reinvested to taxable">Surplus</th>
+                                    <th>Conversion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/simulation.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>

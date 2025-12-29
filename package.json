@@ -1,0 +1,19 @@
+{
+  "name": "retirement-optimizer",
+  "version": "1.0.0",
+  "description": "Retirement Portfolio Drawdown Optimizer",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "deploy": "./deploy.sh",
+    "deploy:draft": "./deploy.sh --draft",
+    "deploy:prod": "./deploy.sh --prod"
+  },
+  "keywords": ["retirement", "financial", "optimization"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
