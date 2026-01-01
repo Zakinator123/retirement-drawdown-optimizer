@@ -1,5 +1,4 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { OptimizePanel } from "@/components/optimize/optimize-panel";
 import { ResultsPanel } from "@/components/results/results-panel";
 import { YearTable } from "@/components/results/year-table/year-table";
 import { ScenarioPanel } from "@/components/scenario/scenario-panel";
@@ -13,7 +12,6 @@ export default function Page() {
             <div className="columns-1 md:columns-2 [column-gap:1rem]">
               <ScenarioPanel className="contents" />
             </div>
-            <OptimizePanel />
           </aside>
           <main>
             <ResultsPanel />

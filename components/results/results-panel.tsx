@@ -7,6 +7,8 @@ import { BalancesChart } from "@/components/results/charts/balances-chart";
 import { WithdrawalsChart } from "@/components/results/charts/withdrawals-chart";
 import { TaxesChart } from "@/components/results/charts/taxes-chart";
 import { TanwChart } from "@/components/results/charts/tanw-chart";
+import { RothConversionHeatmap } from "@/components/optimize/roth-conversion-heatmap";
+import { WithdrawalStrategyChart } from "@/components/optimize/withdrawal-strategy-chart";
 import { useStore } from "@/lib/store";
 
 export function ResultsPanel() {
@@ -30,6 +32,8 @@ export function ResultsPanel() {
         <WithdrawalsChart />
         <TaxesChart />
       </div>
+      <RothConversionHeatmap />
+      <WithdrawalStrategyChart />
     </section>
   );
 }

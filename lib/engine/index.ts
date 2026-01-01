@@ -5,3 +5,5 @@ export * from "./social-security";
 export * from "./tax";
 export * from "./simulation";
 export * from "./optimize";
+export * from "./roth-conversion-grid";
+export * from "./withdrawal-comparison";

@@ -7,7 +7,7 @@ The result:
 - A ledger system that logs all cash movements for auditability and UI transparency.
 - A React/Next.js UI with shadcn‑style components and slider‑driven inputs.
 - Expandable yearly rows that show a compact ledger table.
-- Optimization helpers to explore withdrawal order, Roth conversions, and SS claim ages.
+- Interactive analysis tools: Roth Conversion Impact heatmap and Withdrawal Strategy comparison charts.
 
 ---
 
@@ -46,7 +46,7 @@ components/
   layout/             # Header and main layout
   scenario/           # Input cards (sliders)
   results/            # Summary cards, charts, year table
-  optimize/           # Optimization panel and sensitivity chart
+  optimize/           # Analysis charts (Roth heatmap, withdrawal comparison)
   ui/                 # shadcn-style primitives (card, table, slider, etc.)
 lib/
   engine/             # Simulation engine (types, tax, SS, RMD, optimize)
@@ -88,13 +88,14 @@ spending withdrawals, tax payments, conversions, growth, and reinvestment.
 8. Reinvest excess RMD net cash into taxable.
 9. Build `YearRow` + ledger entries.
 
-### Optimization
-`lib/engine/optimize.ts` compares:
-- Withdrawal orders.
-- SS claim ages.
-- Roth conversion schedules.
+### Analysis Tools
+The engine provides functions to analyze strategy tradeoffs:
 
-Scores are based on final TANW (tax‑adjusted net worth).
+- `lib/engine/roth-conversion-grid.ts`: Computes a 2D grid of TANW outcomes across conversion amounts and end ages. Powers the heatmap visualization.
+- `lib/engine/withdrawal-comparison.ts`: Compares all 12 withdrawal order permutations to find the optimal sequence.
+- `lib/engine/optimize.ts`: Legacy optimization helpers (SS claim ages, etc.).
+
+All analysis tools score scenarios by final TANW (tax‑adjusted net worth).
 
 ---
 
@@ -137,11 +138,20 @@ Recharts visualizations:
 
 Each chart includes horizontal gridlines via `CartesianGrid`.
 
-### Optimization
-`components/optimize/optimize-panel.tsx` runs comparisons and shows:
-- Best result (TANW).
-- Sensitivity chart for variants.
-- Variant list (hidden if all variants yield identical scores).
+### Analysis Charts
+Interactive tools to explore strategy tradeoffs:
+
+**Roth Conversion Impact** (`components/optimize/roth-conversion-heatmap.tsx`):
+- 2D heatmap showing final TANW across conversion amounts ($0–$300K) and end ages.
+- Color scale from red (lower TANW) to green (higher TANW).
+- Highlights best configuration and your current settings.
+- "Apply Best Settings" button to adopt the optimal conversion strategy.
+- Explains why results may be non‑monotonic (RMD interactions, SS taxability thresholds, IRA exhaustion).
+
+**Withdrawal Strategy Comparison** (`components/optimize/withdrawal-strategy-chart.tsx`):
+- Bar chart comparing all 12 withdrawal order permutations.
+- Ranked table showing TANW, total taxes, and difference from best.
+- "Apply Best Strategy" button to adopt the optimal withdrawal order.
 
 ---
 
@@ -156,7 +166,9 @@ The rebuild plan in `.cursor/plans/retirement_optimizer_rebuild_88fc8727.plan.md
 - `lib/engine/tax.ts`: tax calculator
 - `lib/engine/ledger.ts`: ledger entry helper
 - `lib/engine/simulation.ts`: main simulation loop
-- `lib/engine/optimize.ts`: optimization functions
+- `lib/engine/roth-conversion-grid.ts`: Roth conversion heatmap data
+- `lib/engine/withdrawal-comparison.ts`: withdrawal order comparison
+- `lib/engine/optimize.ts`: legacy optimization functions
 - `lib/engine/index.ts`: exports
 
 ### State and Utilities
@@ -210,6 +222,8 @@ pnpm test
 - **SS Toggle**: Social Security can be disabled and the form collapses to simplify scenarios without SS income.
 - **Compact Layout**: Controls are arranged in two columns above the yearly table, with charts to the right for live visual feedback.
 - **shadcn Slider**: A lightweight range input slider is used (`components/ui/slider.tsx`). It supports single and dual‑knob ranges.
+- **Analysis Tools**: The Roth Conversion heatmap and Withdrawal Strategy comparison run on‑demand (button click) since they execute hundreds of simulations. Results show fixed parameters so users understand what was held constant.
+- **Non‑Monotonic Results**: Roth conversion outcomes can oscillate due to complex interactions between RMDs, SS taxability thresholds ($25k/$34k), IRA exhaustion timing, and tax payment cascading. This is expected behavior, not a bug.
 
 ---
 
