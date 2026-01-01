@@ -11,6 +11,11 @@ import {
   YearRow,
 } from "./types";
 
+// TODO: Refactor to use explicit `tax_accrual` ledger entries for all tax sources
+// (IRA distributions, Roth conversions, SS taxable, capital gains, cash interest).
+// This would improve auditability by showing exactly what created each tax liability.
+// See NEW_PLAN.md section 4.2 for the original design intent.
+
 interface SpendingNeed {
   baseSpending: number;
   oneOffExpenses: number;
@@ -614,19 +619,8 @@ export function runSimulation(scenario: Scenario): SimulationResult {
       : 0;
     if (ssGross > 0) {
       state.cash += ssGross;
-      yearLedger.push(
-        createLedgerEntry({
-          yearIndex,
-          age,
-          phase: "spending",
-          type: "income",
-          amountGross: ssGross,
-          account: "cash",
-          purpose: "income",
-          attribution: "social_security",
-          description: `Social Security benefit`,
-        }),
-      );
+      // Note: SS ledger entry is created later (after all income is known) 
+      // to show accurate preliminary tax estimate
     }
 
     const rmdRequired = calculateRMD(age, priorYearIra);
@@ -703,6 +697,33 @@ export function runSimulation(scenario: Scenario): SimulationResult {
           }),
         );
       }
+    }
+
+    // Create SS income ledger entry now that we have all income information
+    // Calculate preliminary SS taxability for ledger display
+    // (Final SS taxability is recalculated in tax iteration loop below)
+    if (ssGross > 0) {
+      const preliminarySsTaxable = calculateSSTaxable(
+        ssGross,
+        iraDistributionsActual + rothConversion + realizedCapGains + cashInterest,
+      );
+      const ssTaxForLedger = preliminarySsTaxable.taxable * scenario.ordinaryIncomeRate;
+      
+      yearLedger.push(
+        createLedgerEntry({
+          yearIndex,
+          age,
+          phase: "spending",
+          type: "income",
+          amountGross: ssGross,
+          amountNet: ssGross - ssTaxForLedger,
+          account: "cash",
+          taxOrdinary: ssTaxForLedger,
+          purpose: "income",
+          attribution: "social_security",
+          description: `Social Security benefit (${Math.round((preliminarySsTaxable.taxable / ssGross) * 100)}% taxable)`,
+        }),
+      );
     }
 
     // Tax iteration: paying taxes may create more taxable income, which creates more tax
